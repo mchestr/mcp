@@ -30,13 +30,14 @@ from awslabs.billing_cost_management_mcp_server.tools.cost_category_tools import
 )
 from botocore.exceptions import ClientError
 from fastmcp import Context
+from typing import Any
 from unittest.mock import AsyncMock, MagicMock, patch
 
 
 COST_CATEGORY_ARN = 'arn:aws:ce::123456789012:costcategory/abcd-1234-efgh-5678'
 
 
-def _reload_with_identity_decorator():
+def _reload_with_identity_decorator() -> Any:
     """Reload module with FastMCP.tool patched to return the original function."""
     from awslabs.billing_cost_management_mcp_server.tools import cost_category_tools as mod
 
@@ -167,8 +168,9 @@ class TestDescribeCostCategoryDefinition:
             return_value={'status': 'error', 'message': 'Cost category not found'}
         )
 
-        with patch.object(mod, 'create_aws_client', return_value=mock_client), patch.object(
-            mod, 'handle_aws_error', mock_handle
+        with (
+            patch.object(mod, 'create_aws_client', return_value=mock_client),
+            patch.object(mod, 'handle_aws_error', mock_handle),
         ):
             result = await mod.describe_cost_category_definition(mock_context, COST_CATEGORY_ARN)
 
@@ -181,12 +183,11 @@ class TestDescribeCostCategoryDefinition:
         """Test error handling for generic exceptions."""
         mod = _reload_with_identity_decorator()
         error = Exception('Unexpected error')
-        mock_handle = AsyncMock(
-            return_value={'status': 'error', 'message': 'Unexpected error'}
-        )
+        mock_handle = AsyncMock(return_value={'status': 'error', 'message': 'Unexpected error'})
 
-        with patch.object(mod, 'create_aws_client', side_effect=error), patch.object(
-            mod, 'handle_aws_error', mock_handle
+        with (
+            patch.object(mod, 'create_aws_client', side_effect=error),
+            patch.object(mod, 'handle_aws_error', mock_handle),
         ):
             result = await mod.describe_cost_category_definition(mock_context, COST_CATEGORY_ARN)
 
@@ -280,8 +281,9 @@ class TestListCostCategoryDefinitions:
             )
         )
 
-        with patch.object(mod, 'create_aws_client', return_value=mock_ce_client), patch.object(
-            mod, 'paginate_aws_response', mock_paginate
+        with (
+            patch.object(mod, 'create_aws_client', return_value=mock_ce_client),
+            patch.object(mod, 'paginate_aws_response', mock_paginate),
         ):
             result = await mod.list_cost_category_definitions(mock_context, max_pages=5)
 
@@ -299,8 +301,9 @@ class TestListCostCategoryDefinitions:
             )
         )
 
-        with patch.object(mod, 'create_aws_client', return_value=mock_ce_client), patch.object(
-            mod, 'paginate_aws_response', mock_paginate
+        with (
+            patch.object(mod, 'create_aws_client', return_value=mock_ce_client),
+            patch.object(mod, 'paginate_aws_response', mock_paginate),
         ):
             result = await mod.list_cost_category_definitions(mock_context, next_token='token456')
 
@@ -316,8 +319,9 @@ class TestListCostCategoryDefinitions:
         )
         mock_handle = AsyncMock(return_value={'status': 'error', 'message': 'Service error'})
 
-        with patch.object(mod, 'create_aws_client', side_effect=error), patch.object(
-            mod, 'handle_aws_error', mock_handle
+        with (
+            patch.object(mod, 'create_aws_client', side_effect=error),
+            patch.object(mod, 'handle_aws_error', mock_handle),
         ):
             result = await mod.list_cost_category_definitions(mock_context)
 

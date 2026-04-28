@@ -30,10 +30,11 @@ from awslabs.billing_cost_management_mcp_server.tools.cost_allocation_tags_tools
 )
 from botocore.exceptions import ClientError
 from fastmcp import Context
+from typing import Any
 from unittest.mock import AsyncMock, MagicMock, patch
 
 
-def _reload_with_identity_decorator():
+def _reload_with_identity_decorator() -> Any:
     """Reload module with FastMCP.tool patched to return the original function."""
     from awslabs.billing_cost_management_mcp_server.tools import (
         cost_allocation_tags_tools as mod,
@@ -227,8 +228,9 @@ class TestListCostAllocationTags:
             )
         )
 
-        with patch.object(mod, 'create_aws_client', return_value=mock_ce_client), patch.object(
-            mod, 'paginate_aws_response', mock_paginate
+        with (
+            patch.object(mod, 'create_aws_client', return_value=mock_ce_client),
+            patch.object(mod, 'paginate_aws_response', mock_paginate),
         ):
             result = await mod.list_cost_allocation_tags(mock_context, max_pages=5)
 
@@ -247,8 +249,9 @@ class TestListCostAllocationTags:
             )
         )
 
-        with patch.object(mod, 'create_aws_client', return_value=mock_ce_client), patch.object(
-            mod, 'paginate_aws_response', mock_paginate
+        with (
+            patch.object(mod, 'create_aws_client', return_value=mock_ce_client),
+            patch.object(mod, 'paginate_aws_response', mock_paginate),
         ):
             result = await mod.list_cost_allocation_tags(mock_context, next_token='abc123')
 
@@ -264,8 +267,9 @@ class TestListCostAllocationTags:
         )
         mock_handle = AsyncMock(return_value={'status': 'error', 'message': 'Too many tags'})
 
-        with patch.object(mod, 'create_aws_client', side_effect=error), patch.object(
-            mod, 'handle_aws_error', mock_handle
+        with (
+            patch.object(mod, 'create_aws_client', side_effect=error),
+            patch.object(mod, 'handle_aws_error', mock_handle),
         ):
             result = await mod.list_cost_allocation_tags(mock_context)
 
@@ -324,8 +328,9 @@ class TestListCostAllocationTagBackfillHistory:
             )
         )
 
-        with patch.object(mod, 'create_aws_client', return_value=mock_ce_client), patch.object(
-            mod, 'paginate_aws_response', mock_paginate
+        with (
+            patch.object(mod, 'create_aws_client', return_value=mock_ce_client),
+            patch.object(mod, 'paginate_aws_response', mock_paginate),
         ):
             result = await mod.list_cost_allocation_tag_backfill_history(
                 mock_context, max_pages=10
@@ -345,8 +350,9 @@ class TestListCostAllocationTagBackfillHistory:
             )
         )
 
-        with patch.object(mod, 'create_aws_client', return_value=mock_ce_client), patch.object(
-            mod, 'paginate_aws_response', mock_paginate
+        with (
+            patch.object(mod, 'create_aws_client', return_value=mock_ce_client),
+            patch.object(mod, 'paginate_aws_response', mock_paginate),
         ):
             result = await mod.list_cost_allocation_tag_backfill_history(
                 mock_context, next_token='token123'
@@ -361,8 +367,9 @@ class TestListCostAllocationTagBackfillHistory:
         error = Exception('API error')
         mock_handle = AsyncMock(return_value={'status': 'error', 'message': 'API error'})
 
-        with patch.object(mod, 'create_aws_client', side_effect=error), patch.object(
-            mod, 'handle_aws_error', mock_handle
+        with (
+            patch.object(mod, 'create_aws_client', side_effect=error),
+            patch.object(mod, 'handle_aws_error', mock_handle),
         ):
             result = await mod.list_cost_allocation_tag_backfill_history(mock_context)
 
