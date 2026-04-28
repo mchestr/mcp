@@ -15,7 +15,6 @@
 """Cost Allocation Tags tools for the AWS Billing and Cost Management MCP server."""
 
 import json
-
 from ..utilities.aws_service_base import (
     create_aws_client,
     format_response,
@@ -95,9 +94,12 @@ async def list_cost_allocation_tags(
             try:
                 params['TagKeys'] = json.loads(tag_keys)
             except json.JSONDecodeError as e:
-                return format_response('error', {
-                    'message': f'Invalid JSON for tag_keys parameter: {e}',
-                })
+                return format_response(
+                    'error',
+                    {
+                        'message': f'Invalid JSON for tag_keys parameter: {e}',
+                    },
+                )
         if tag_type:
             params['Type'] = tag_type
         if max_results is not None:
@@ -114,10 +116,13 @@ async def list_cost_allocation_tags(
                 'CostAllocationTags',
                 max_pages=max_pages,
             )
-            return format_response('success', {
-                'CostAllocationTags': results,
-                'Pagination': pagination,
-            })
+            return format_response(
+                'success',
+                {
+                    'CostAllocationTags': results,
+                    'Pagination': pagination,
+                },
+            )
 
         response = ce_client.list_cost_allocation_tags(**params)
         return format_response('success', response)
@@ -193,13 +198,18 @@ async def list_cost_allocation_tag_backfill_history(
                 'BackfillRequests',
                 max_pages=max_pages,
             )
-            return format_response('success', {
-                'BackfillRequests': results,
-                'Pagination': pagination,
-            })
+            return format_response(
+                'success',
+                {
+                    'BackfillRequests': results,
+                    'Pagination': pagination,
+                },
+            )
 
         response = ce_client.list_cost_allocation_tag_backfill_history(**params)
         return format_response('success', response)
 
     except Exception as e:
-        return await handle_aws_error(ctx, e, 'ListCostAllocationTagBackfillHistory', 'Cost Explorer')
+        return await handle_aws_error(
+            ctx, e, 'ListCostAllocationTagBackfillHistory', 'Cost Explorer'
+        )

@@ -20,7 +20,6 @@ Dedicated tools for Cost Category management APIs:
 """
 
 import json
-
 from ..utilities.aws_service_base import (
     create_aws_client,
     format_response,
@@ -165,9 +164,12 @@ async def list_cost_category_definitions(
             try:
                 params['SupportedResourceTypes'] = json.loads(supported_resource_types)
             except json.JSONDecodeError as e:
-                return format_response('error', {
-                    'message': f'Invalid JSON for supported_resource_types parameter: {e}',
-                })
+                return format_response(
+                    'error',
+                    {
+                        'message': f'Invalid JSON for supported_resource_types parameter: {e}',
+                    },
+                )
         if max_results is not None:
             params['MaxResults'] = max_results
 
@@ -182,10 +184,13 @@ async def list_cost_category_definitions(
                 'CostCategoryReferences',
                 max_pages=max_pages,
             )
-            return format_response('success', {
-                'CostCategoryReferences': results,
-                'Pagination': pagination,
-            })
+            return format_response(
+                'success',
+                {
+                    'CostCategoryReferences': results,
+                    'Pagination': pagination,
+                },
+            )
 
         response = ce_client.list_cost_category_definitions(**params)
         return format_response('success', response)
